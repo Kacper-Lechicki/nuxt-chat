@@ -64,7 +64,7 @@ watch(
 
     <UButton
       :disabled="!newMessage || isStreaming"
-      class="absolute right-3 bottom-3 rounded-full"
+      class="absolute right-3 bottom-3 rounded-full cursor-pointer"
       color="primary"
       icon="i-heroicons-paper-airplane"
       square

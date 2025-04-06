@@ -1,5 +1,5 @@
 import type { Chat, ChatMessage } from '~/types';
-import { MOCK_CHAT } from '~/composables/mockData';
+import { MOCK_CHAT } from '~/data/mockData';
 
 export default function useChat() {
   const chat = ref<Chat>(MOCK_CHAT);

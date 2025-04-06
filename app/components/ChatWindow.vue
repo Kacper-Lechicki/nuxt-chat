@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import type { ChatMessage } from '~/types';
+import useChatScroll from '~/composables/useChatScroll';
 
 const { chat, messages, sendMessage } = useChat();
+const { showScrollButton, scrollToBottom, pinToBottom } = useChatScroll();
 
 const messageClasses = computed(() => (message: ChatMessage) => {
   return {
@@ -14,6 +16,8 @@ const messageClasses = computed(() => (message: ChatMessage) => {
 function onSendMessage(message: string) {
   sendMessage(message);
 }
+
+watch(() => messages.value, pinToBottom, { deep: true });
 </script>
 
 <template>
@@ -45,9 +49,20 @@ function onSendMessage(message: string) {
           </div>
         </div>
 
-        <div class="message-form-container">
+        <UContainer class="message-form-container">
+          <div class="scroll-to-bottom-button-container">
+            <UButton
+              v-if="showScrollButton"
+              class="rounded-full shadow-sm"
+              color="neutral"
+              icon="i-heroicons-arrow-down"
+              variant="outline"
+              @click="() => scrollToBottom()"
+            />
+          </div>
+
           <ChatInput @send-message="onSendMessage($event)" />
-        </div>
+        </UContainer>
       </template>
     </UContainer>
   </div>
@@ -55,23 +70,26 @@ function onSendMessage(message: string) {
 
 <style lang="css" scoped>
 .scroll-container {
-  box-sizing: border-box;
-  height: 100%;
+  height: calc(100vh - 4rem);
   overflow-y: auto;
 }
 
 .chat-container {
   position: relative;
   max-width: 800px;
-  height: 100%;
 }
 
 .chat-header {
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
   padding: 1rem 0;
+  background: var(--ui-bg);
+  border-bottom: 1px solid var(--ui-border);
+  z-index: 5;
 }
 
 .title {
@@ -117,16 +135,21 @@ function onSendMessage(message: string) {
 }
 
 .message-form-container {
-  position: absolute;
-  bottom: 2rem;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  padding-bottom: 2rem;
   width: calc(100% - 2rem);
+  max-width: 800px;
+  background: var(--ui-bg);
   z-index: 10;
+  transform: translateX(-50%);
 }
 
 .scroll-to-bottom-button-container {
   position: absolute;
   left: 0;
-  bottom: calc(100% + 1rem);
+  bottom: calc(100% + 2rem);
   display: flex;
   justify-content: center;
   width: 100%;
@@ -135,6 +158,7 @@ function onSendMessage(message: string) {
 
 .scroll-to-bottom-button-container :deep(button) {
   pointer-events: auto;
+  cursor: pointer;
 }
 
 .empty-state {
