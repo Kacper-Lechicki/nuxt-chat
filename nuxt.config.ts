@@ -10,4 +10,11 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   modules: ['@nuxt/ui', '@nuxt/eslint'],
+
+  runtimeConfig: {
+    openAiApiKey: 'some-key',
+    public: {
+      someValue: 'on the frontend!',
+    },
+  },
 });
