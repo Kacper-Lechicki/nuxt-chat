@@ -1,8 +1,14 @@
 <script lang="ts" setup>
-import type { ChatMessage } from '~/types';
+import type { Chat, ChatMessage } from '~/types';
 import useChatScroll from '~/composables/useChatScroll';
 
-const { chat, messages, sendMessage } = useChat();
+const props = defineProps<{
+  messages: ChatMessage[];
+  chat: Chat;
+}>();
+
+const emit = defineEmits(['send-message']);
+
 const { showScrollButton, scrollToBottom, pinToBottom } = useChatScroll();
 
 const messageClasses = computed(() => (message: ChatMessage) => {
@@ -14,10 +20,10 @@ const messageClasses = computed(() => (message: ChatMessage) => {
 });
 
 function onSendMessage(message: string) {
-  sendMessage(message);
+  emit('send-message', message);
 }
 
-watch(() => messages.value, pinToBottom, { deep: true });
+watch(() => props.messages, pinToBottom, { deep: true });
 </script>
 
 <template>
@@ -81,7 +87,7 @@ watch(() => messages.value, pinToBottom, { deep: true });
 
 .chat-header {
   position: sticky;
-  top: 0;
+  top: -2px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -111,6 +117,7 @@ watch(() => messages.value, pinToBottom, { deep: true });
   padding: 1rem;
   border-radius: var(--ui-radius);
   transition: all 0.2s;
+  animation: message-appear 0.3s ease-out;
 }
 
 .message-user {
@@ -188,5 +195,16 @@ watch(() => messages.value, pinToBottom, { deep: true });
 
 .message-input::-webkit-scrollbar {
   display: none;
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
